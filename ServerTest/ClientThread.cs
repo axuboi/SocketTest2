@@ -32,8 +32,8 @@ namespace ServerTest
 
             while (jatka)
             {
-                // Muutetaan ohjelmaa siten, että säie loppuu, jos asiakkaasta ei ole kuulunut 60 sekuntiin mitään
-                DateTime timeConnected = DateTime.Now;
+                // Viimeisimmän komennon vastaanottamisen ajankohta:
+                DateTime timeLastCommandReceived = DateTime.Now;
 
                 // Tarkistetaan, onko dataa syötettäväksi
                 if (ns.DataAvailable)
@@ -55,16 +55,19 @@ namespace ServerTest
                             jatka = false;
                             break;
                     }
-                    // Viimeisimmän komennon vastaanottamisen ajankohta:
-                    DateTime timeCommandReceived = DateTime.Now;
-
                     sw.WriteLine(answer);
                     Console.WriteLine(answer);
                 }
-                else
+                else // if (ns.DataAvailable)
                 {
-                    
-                    Thread.Sleep(500);
+                    // Lopetetaan, jos viimeisestä komennosta on kulunut yli minuutti:
+                    DateTime timeNow = DateTime.Now;
+                    TimeSpan erotus = timeNow - timeLastCommandReceived;
+
+                    if (erotus.TotalSeconds > 60)
+                        jatka = false;
+                    else
+                        Thread.Sleep(500);
                 }
             }
             // Suljetaan yhteydet
