@@ -38,10 +38,11 @@ namespace ClientTest
                     break;
             }
 
+            /*
             sw.WriteLine("TIME");
             vastaus = sr.ReadLine();
             Console.WriteLine(vastaus);
-
+            */
             sw.Close();
             sr.Close();
             ns.Close();
