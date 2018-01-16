@@ -8,8 +8,8 @@ using System.IO;
 using System.Threading;
 namespace ServerTest
 {
-    // tässä luokassa on asiakkaan palveleminen
-    // omassa säikeessään (sivu 34)
+    // Tässä luokassa on asiakkaan palveleminen
+    // Omassa säikeessään (sivu 34, Sockets.pptx)
     class ClientThread
     {
         private TcpClient client;
@@ -18,41 +18,55 @@ namespace ServerTest
             this.client = client;
         }
 
-        // ajetaan omassa säikeessään
+        // Ajetaan omassa säikeessään
         public void ServeClient()
         {
-            // avataan yhteydet
-            // avataan streamit
+            // Avataan yhteydet
+            // Avataan streamit
             NetworkStream ns = client.GetStream();
             StreamWriter sw = new StreamWriter(ns);
             StreamReader sr = new StreamReader(ns);
-
             sw.AutoFlush = true;
 
-            // luetaan ja käsitellään komennot
+            bool jatka = true;
 
-            string komento = sr.ReadLine();
-            string vastaus = "";
-            // päivitetään aika
-            switch (komento)
+            //int requestCounter = 0;
+            while (jatka)
             {
-                case "TIME":
-                    vastaus = DateTime.Now.ToString();
-                    break;
-                case "NUMBER_OF_CLIENTS":
-                    vastaus = "1"; // TODO
-                    break;
-                case "QUIT":
-                    vastaus = "lopetus";
-                    break;
+                // Tarkistetaan, onko dataa syötettäväksi
+                if (ns.DataAvailable)
+                {
+                    // Luetaan ja käsitellään komennot
+                    string command = sr.ReadLine();
+                    string answer = "";
+
+                    switch (command)
+                    {
+                        case "TIME":
+                            answer = DateTime.Now.ToString();
+                            break;
+                        case "NUMBER_OF_CLIENTS":
+                            answer = "1"; // 1000
+                            break;
+                        case "QUIT":
+                            answer = "lopetus";
+                            jatka = false;
+                            break;
+                    }
+                    sw.WriteLine(answer);
+                    Console.WriteLine(answer);
+                }
+                else
+                {
+                    Thread.Sleep(500);
+                }
             }
-            sw.WriteLine(vastaus);
-            Console.WriteLine(vastaus);
-            // suljetaan yhteydet
+            // Suljetaan yhteydet
             sw.Close();
             sr.Close();
             ns.Close();
             client.Close();
+            
         }
     }
 }
