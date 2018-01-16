@@ -30,9 +30,11 @@ namespace ServerTest
 
             bool jatka = true;
 
-            //int requestCounter = 0;
             while (jatka)
             {
+                // Muutetaan ohjelmaa siten, että säie loppuu, jos asiakkaasta ei ole kuulunut 60 sekuntiin mitään
+                DateTime timeConnected = DateTime.Now;
+
                 // Tarkistetaan, onko dataa syötettäväksi
                 if (ns.DataAvailable)
                 {
@@ -53,11 +55,15 @@ namespace ServerTest
                             jatka = false;
                             break;
                     }
+                    // Viimeisimmän komennon vastaanottamisen ajankohta:
+                    DateTime timeCommandReceived = DateTime.Now;
+
                     sw.WriteLine(answer);
                     Console.WriteLine(answer);
                 }
                 else
                 {
+                    
                     Thread.Sleep(500);
                 }
             }

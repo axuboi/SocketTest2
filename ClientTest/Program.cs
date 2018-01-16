@@ -25,7 +25,7 @@ namespace ClientTest
             string vastaus = "";
             while (true)
             {
-                Console.WriteLine("Anna komento");
+                Console.WriteLine("Anna komento ( TIME / NUMBER_OF_CLIENTS / QUIT )");
                 string komento = Console.ReadLine();
 
                 // lähetetään komento
