@@ -24,10 +24,10 @@ namespace ServerTest
         {
             // Avataan yhteydet
             // Avataan streamit
-            NetworkStream ns = client.GetStream();
-            StreamWriter sw = new StreamWriter(ns);
-            StreamReader sr = new StreamReader(ns);
-            sw.AutoFlush = true;
+            SocketUtilities.SocketUtilityClass su = 
+                new SocketUtilities.SocketUtilityClass(client);
+
+            su.Open();
 
             bool jatka = true;
 
@@ -37,29 +37,29 @@ namespace ServerTest
                 DateTime timeLastCommandReceived = DateTime.Now;
 
                 // Tarkistetaan, onko dataa syötettäväksi
-                if (ns.DataAvailable)
+                if (su.DataAvailable())
                 {
                     // Luetaan ja käsitellään komennot
-                    string command = sr.ReadLine();
+                    string command = su.ReadMessage();
                     string answer = "";
 
                     switch (command)
                     {
-                        case "TIME":
+                        case SocketUtilities.Commands.TIME:
                             answer = DateTime.Now.ToString();
                             break;
-                        case "NUMBER_OF_CLIENTS":
+                        case SocketUtilities.Commands.NUMBER_OF_CLIENTS:
                             answer = "1"; // 1000
                             break;
-                        case "QUIT":
+                        case SocketUtilities.Commands.QUIT:
                             answer = "lopetus";
                             jatka = false;
                             break;
                     }
-                    sw.WriteLine(answer);
+                    su.WriteMessage(answer);
                     Console.WriteLine(answer);
                 }
-                else // if (ns.DataAvailable)
+                else // if (su.DataAvailable())
                 {
                     // Lopetetaan, jos viimeisestä komennosta on kulunut yli minuutti:
                     DateTime timeNow = DateTime.Now;
@@ -72,10 +72,7 @@ namespace ServerTest
                 }
             }
             // Suljetaan yhteydet
-            sw.Close();
-            sr.Close();
-            ns.Close();
-            client.Close();
+            su.Close();
             
         }
     }

@@ -15,38 +15,28 @@ namespace ClientTest
         {
             int port = 8221;
             TcpClient client = new TcpClient("localhost", port);
+            SocketUtilities.SocketUtilityClass su = 
+                new SocketUtilities.SocketUtilityClass(client);
 
-            NetworkStream ns = client.GetStream();
-            StreamWriter sw = new StreamWriter(ns);
-            StreamReader sr = new StreamReader(ns);
-
-            sw.AutoFlush = true;
+            su.Open();
 
             string vastaus = "";
             while (true)
             {
-                Console.WriteLine("Anna komento ( TIME / NUMBER_OF_CLIENTS / QUIT )");
+                Console.WriteLine("Anna komento");
                 string komento = Console.ReadLine();
 
                 // lähetetään komento
-                sw.WriteLine(komento);
+                su.WriteMessage(komento);
 
                 // odotetaan vastausta
-                vastaus = sr.ReadLine();
+                vastaus = su.ReadMessage();
                 Console.WriteLine(vastaus);
-                if (komento == "QUIT")
+                if (komento == SocketUtilities.Commands.QUIT)
                     break;
             }
 
-            /*
-            sw.WriteLine("TIME");
-            vastaus = sr.ReadLine();
-            Console.WriteLine(vastaus);
-            */
-            sw.Close();
-            sr.Close();
-            ns.Close();
-            client.Close();
+            su.Close();
 
             Console.ReadKey();
         }
